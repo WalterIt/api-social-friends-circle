@@ -6,7 +6,6 @@ use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Auth\AuthenticationException;
 
-
 class Handler extends ExceptionHandler
 {
     /**
@@ -31,6 +30,8 @@ class Handler extends ExceptionHandler
     /**
      * Report or log an exception.
      *
+     * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
+     *
      * @param  \Exception  $exception
      * @return void
      */
@@ -51,7 +52,6 @@ class Handler extends ExceptionHandler
         return parent::render($request, $exception);
     }
 
-
     /**
      * Convert an authentication exception into a response.
      *
@@ -63,5 +63,4 @@ class Handler extends ExceptionHandler
     {
         return response()->json(['message' => $exception->getMessage()], 401);
     }
-
 }
