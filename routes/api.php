@@ -23,3 +23,4 @@ Route::group([
 });
 
 Route::apiResource('posts', 'PostController');
+Route::apiResource('users', 'UserController');
