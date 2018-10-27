@@ -19,7 +19,25 @@ class PostController extends Controller
      */
     public function index()
     {
-        return response()->json(Post::all());
+        $loggedUser = Auth::user();
+
+
+        // Return Post of Logged users friends
+        $friendsPosts = $loggedUser->friends()
+            ->join('posts', 'posts.author_id', '=', 'users.id')
+            ->orderBy('posts.created_at', 'desc')
+            ->get(['posts.*']);
+
+
+        // Return posts created by logged users or public posts
+        $publicAndOwnPosts = Post::where('visibility', '=', Post::VISIBILITY_STATUS_PUBLIC)
+            ->orWhere('author_id', $loggedUser->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $result = $friendsPosts->merge($publicAndOwnPosts)->sortByDesc('created_at')->values()->all();
+
+        return response()->json($result);
     }
 
     /**
