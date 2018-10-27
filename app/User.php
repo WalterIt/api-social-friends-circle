@@ -35,7 +35,34 @@ class User extends Authenticatable implements JWTSubject
     }
 
 
+    public function friends()
+    {
+        // MANY TO MANY RELATIONSHIP
+        return $this->belongsToMany('App\User', 'friends', 'user_id', 'friend_id');
+    }
 
+    public function hasFriendWithId($userId)
+    {
+        // CHECK IF THE FRIENDS IS ALREADY IN THE RELATIONSHIP
+        return $this->friends->contains($userId);
+    }
+
+    public function addFriendById($friendId)
+    {
+        // ADD FRIENDS TO THE COLLECTION
+        $this->friends()->attach($friendId);
+
+        $friend = User::find($friendId);
+        $friend->friends()->attach($this->id);
+    }
+
+    public function removeFriendById($friendId)
+    {
+        $this->friends()->detach($friendId);
+
+        $friend = User::find($friendId);
+        $friend->friends()->detach($this->id);
+    }
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
