@@ -19,6 +19,8 @@ class PostController extends Controller
      */
     public function index()
     {
+        event(new \App\Events\Event());
+
         $loggedUser = Auth::user();
 
 
