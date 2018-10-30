@@ -16,4 +16,12 @@ class Post extends Model
     {
         return $this->belongsTo('App\User');
     }
+
+    public function isPublic()
+    {
+        return $this->visibility === Post::VISIBILITY_STATUS_PUBLIC;
+    }
+
+
+
 }

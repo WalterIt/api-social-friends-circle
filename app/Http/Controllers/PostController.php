@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Post;
+use App\Events\PostCreated;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,7 +21,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        event(new \App\Events\Event());
+        // event(new \App\Events\Event());
 
         $loggedUser = Auth::user();
 
@@ -63,7 +65,11 @@ class PostController extends Controller
         // POST /api/posts
         $post = new Post($request->all());
 
-        Auth::user()->posts()->save($post);
+        $author = Auth::user();
+
+        $author->posts()->save($post);
+
+        event(new PostCreated($post, $author));
 
         return response()->json($post);
     }
