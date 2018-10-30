@@ -13,21 +13,19 @@ class EventServiceProvider extends ServiceProvider
      * The event listener mappings for the application.
      *
      * @var array
-
-    * protected $listen = [
-    *    Registered::class => [
-    *        SendEmailVerificationNotification::class,
-    *    ],
-    * ];
-    */
-
+     */
     protected $listen = [
         'App\Events\PostCreated' => [
-            'App\Listeners\PostCreatedListener',
+            'App\Listeners\PostCreatedListener'
+        ],
+        'App\Events\FriendAdded' => [
+            'App\Listeners\FriendAddedListener'
+        ],
+
+        'App\Events\FriendRemoved' => [
+            'App\Listeners\FriendRemovedListener'
         ],
     ];
-
-
 
     /**
      * Register any events for your application.

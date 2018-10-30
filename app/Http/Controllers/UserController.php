@@ -3,15 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\User;
+use \App\Events\FriendAdded;
+use \App\Events\FriendRemoved;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
-    public function __construct()
-    {
+    public function __construct() {
         $this->middleware('auth:api');
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -24,13 +26,11 @@ class UserController extends Controller
 
     public function friends()
     {
-        // RETURN ONLY FRIENDS OF CURRENT LOGGED USER
         return response()->json(Auth::user()->friends);
     }
 
     public function addFriend($userId)
     {
-        // First Find user passed in our route
         $friendToAdd = User::find($userId);
         $loggedUser = Auth::user();
 
@@ -38,17 +38,17 @@ class UserController extends Controller
             return response()->json([ 'error' => "There is no user you are trying to add to friends."], 400);
         }
 
-        // NOT ALLOWED TO ADD YOURSELF TO FRIENDS
         if ($friendToAdd->id === $loggedUser->id) {
             return response()->json([ 'error' => "You can't add yourself to friends."], 400);
         }
-        // UNFORBITTEN TO ADD SAME FRIENDS MORE THAN OUNCE
+
         if ($loggedUser->hasFriendWithId($friendToAdd->id)) {
             return response()->json([ 'error' => 'You are friends already.'], 400);
         }
 
-        // IF EVERYTHING IS OK
         $loggedUser->addFriendById($friendToAdd->id);
+
+        event(new FriendAdded($loggedUser, $friendToAdd));
 
         return response()->json([
             'success' => true
@@ -76,6 +76,8 @@ class UserController extends Controller
         }
 
         $loggedUser->removeFriendById($friendToRemove->id);
+
+        event(new FriendRemoved($loggedUser, $friendToRemove));
 
         return response()->json([
             'success' => true
